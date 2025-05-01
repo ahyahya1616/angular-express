@@ -1,0 +1,102 @@
+<div class="container mt-4">
+  <h2 class="mb-4">Client Orders Dashboard</h2>
+
+  <!-- Client Selection -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      Select Client
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="clientSelect">Client:</label>
+        <select
+          class="form-control"
+          id="clientSelect"
+          [(ngModel)]="selectedClientId"
+          (change)="onClientChange()">
+          <option value="">-- Select a client --</option>
+          <option *ngFor="let client of clients" [value]="client._id">
+            {{ client.nom }} ({{ client.email }})
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Order Details -->
+  <div *ngIf="clientOrderDetails && !isLoading">
+    <div *ngFor="let order of clientOrderDetails.orders" class="card mb-4">
+      <div class="card-header bg-info text-white">
+         {{ order.date | date:'medium' }}
+      </div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Unit Price (HT)</th>
+            <th>Unit Price (TTC)</th>
+            <th>Total (HT)</th>
+            <th>Total (TTC)</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let ligne of order.lignes">
+            <td>{{ ligne.libelle }}</td>
+            <td>{{ ligne.quantite }}</td>
+            <td>{{ formatPrice(ligne.prixUnitaireHT) }} €</td>
+            <td>{{ formatPrice(ligne.prixUnitaireTTC) }} €</td>
+            <td>{{ formatPrice(ligne.totalHT) }} €</td>
+            <td>{{ formatPrice(ligne.totalTTC) }} €</td>
+          </tr>
+          </tbody>
+          <tfoot class="table-secondary">
+          <tr>
+            <td colspan="4" class="text-end fw-bold">Order Total:</td>
+            <td class="fw-bold">{{ formatPrice(order.totalHT) }} </td>
+            <td class="fw-bold">{{ formatPrice(order.totalTTC) }}</td>
+          </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Grand Total Summary -->
+    <div class="card">
+      <div class="card-header bg-success text-white">
+        Total Summary
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="alert alert-info">
+              <h5>Total (HT): {{ formatPrice(getTotalHT()) }} </h5>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="alert alert-primary">
+              <h5>Total (TTC): {{ formatPrice(getTotalTTC()) }}</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="clientOrderDetails">
+    <div *ngIf="(clientOrderDetails.orders?.length || 0) === 0 && !isLoading">
+      This client has no orders.
+    </div>
+  </div>
+
+
+
+</div>
