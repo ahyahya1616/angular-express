@@ -26,4 +26,7 @@ router.delete('/:id/produits/:produitId', commandeController.removeProduitFromCo
 // Calculate total amount for an order
 router.get('/:id/total', commandeController.calculateOrderTotal);
 
+// Get detailed order information for a specific client
+router.get('/client/:clientId/details', commandeController.getClientOrderDetails);
+
 module.exports = router;

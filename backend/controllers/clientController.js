@@ -1,7 +1,6 @@
 const Client = require('../models/Client');
 const Commande = require('../models/Commande');
 
-// Create a new client
 exports.createClient = async (req, res) => {
     try {
         const client = new Client(req.body);
@@ -15,7 +14,6 @@ exports.createClient = async (req, res) => {
     }
 };
 
-// Get all clients
 exports.getAllClients = async (req, res) => {
     try {
         const clients = await Client.find();
@@ -28,7 +26,6 @@ exports.getAllClients = async (req, res) => {
     }
 };
 
-// Get a specific client by ID
 exports.getClientById = async (req, res) => {
     try {
         const client = await Client.findById(req.params.id);
@@ -44,7 +41,6 @@ exports.getClientById = async (req, res) => {
     }
 };
 
-// Update a client
 exports.updateClient = async (req, res) => {
     try {
         const client = await Client.findByIdAndUpdate(
@@ -66,7 +62,6 @@ exports.updateClient = async (req, res) => {
     }
 };
 
-// Delete a client
 exports.deleteClient = async (req, res) => {
     try {
         const client = await Client.findByIdAndDelete(req.params.id);
@@ -84,13 +79,22 @@ exports.deleteClient = async (req, res) => {
     }
 };
 
-// Get all orders for a specific client
 exports.getClientOrders = async (req, res) => {
     try {
         const commandes = await Commande.find({ client: req.params.id })
             .populate('lignesCmd.produit');
 
-        res.status(200).send(commandes);
+        let totalHT = 0;
+        let totalTTC = 0;
+
+        for (const commande of commandes) {
+            for (const item of commande.lignesCmd) {
+                totalHT += item.produit.prix_ht * item.qte;
+                totalTTC += item.produit.prix_ttc * item.qte;
+            }
+        }
+
+        res.status(200).send({ commandes, totalHT, totalTTC });
     } catch (err) {
         res.status(500).send({
             message: "Error retrieving client orders",
