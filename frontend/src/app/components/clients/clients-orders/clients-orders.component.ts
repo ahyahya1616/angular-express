@@ -16,6 +16,8 @@ export class ClientOrdersComponent implements OnInit {
   selectedClientId: string = '';
   clientOrderDetails: ClientOrderDetails | null = null;
   isLoading: boolean = false;
+  today: Date = new Date();
+
 
   constructor(
     private clientService: ClientService,
